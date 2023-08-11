@@ -51,7 +51,11 @@ export default {
           .then((data) => {
             if (!data.ip_address) {
               _this.fetchingIp = false;
-              alert("Something went wrong. Please try again.");
+              if(data.error) {
+                alert(data.error);
+              } else {
+                alert("Something went wrong. Please try again.");
+              }
             } else {
               _this.serverIp = data.ip_address;
               _this.fetchingIp = false;
