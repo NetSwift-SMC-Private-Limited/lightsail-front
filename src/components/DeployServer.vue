@@ -6,6 +6,8 @@ export default {
       employeeId: "",
       serverIp: "",
       fetchingIp: false,
+      cleaningWork: false,
+      confirmCloseWork: false,
       geo: "in",
       geos: [
         {
@@ -67,6 +69,34 @@ export default {
           });
       }
     },
+    closeWork() {
+      let _this = this;
+      if (!this.cleaningWork) {
+        this.cleaningWork = true;
+        fetch(
+          `https://lightsail-api.netswift.pk/clean-servers?employee_id=${this.savedEmployeeId}`
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            if (!data.ip_address) {
+              _this.cleaningWork = false;
+              if(data.error) {
+                alert(data.error);
+              } else {
+                alert("Something went wrong. Please try again.");
+              }
+            } else {
+              _this.cleaningWork = false;
+              _this.confirmCloseWork = false;
+              alert('All good! All IPs have been cleaned.');
+            }
+          })
+          .catch((err) => {
+            _this.cleaningWork = false;
+            alert("Something went wrong. Please try again.");
+          });
+      }
+    },
     async copyText() {
       try {
         await navigator.clipboard.writeText(this.serverIp);
@@ -96,18 +126,46 @@ export default {
     <div v-if="fetchingIp" class="text-warning border border-warning p-2 mb-3">
       Please wait. IP address is being configured.
     </div>
+    <div v-if="cleaningWork" class="text-warning border border-warning p-2 mb-3">
+      Please wait. IPs are being released.
+    </div>
     <p>
-      Working as
+      <span v-if="!confirmCloseWork">Working as
       <span class="text-primary"
         >{{ savedEmployeeId }}
-        <button
-          :disabled="fetchingIp"
-          @click="unsetEmployeeId"
-          class="btn btn-sm btn-primary"
-        >
-          Change
-        </button></span
+      </span>
+      &nbsp;
+      <button
+        :disabled="fetchingIp"
+        @click="unsetEmployeeId"
+        class="btn btn-sm btn-primary"
       >
+        Change ID
+      </button></span>
+      <span v-else>All IPs will be cleaned. Proceed?</span>
+      &nbsp;
+      <button
+        v-if="!confirmCloseWork"
+        @click="confirmCloseWork=true"
+        class="btn btn-sm btn-warning"
+      >
+        Close Work
+      </button>
+      <button
+        v-if="confirmCloseWork"
+        @click="closeWork()"
+        class="btn btn-sm btn-danger"
+      >
+        Delete Servers
+      </button>
+      &nbsp;
+      <button
+        v-if="confirmCloseWork"
+        @click="confirmCloseWork=false"
+        class="btn btn-sm btn-primary"
+      >
+        Cancel
+      </button>
     </p>
     <hr />
     <p>
