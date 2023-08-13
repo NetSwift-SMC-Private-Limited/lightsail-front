@@ -176,7 +176,7 @@ export default {
       class="form-control"
       :value="serverIp"
       readonly
-    />&nbsp;<button
+    /><button
       @click="copyText()"
       class="btn btn-primary btn-sm"
       v-if="serverIp && !fetchingIp"
