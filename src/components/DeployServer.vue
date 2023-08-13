@@ -78,7 +78,7 @@ export default {
         )
           .then((response) => response.json())
           .then((data) => {
-            if (!data.ip_address) {
+            if (!data.status) {
               _this.cleaningWork = false;
               if(data.error) {
                 alert(data.error);
@@ -154,6 +154,7 @@ export default {
       <button
         v-if="confirmCloseWork"
         @click="closeWork()"
+        :disabled="cleaningWork"
         class="btn btn-sm btn-danger"
       >
         Delete Servers
@@ -161,6 +162,7 @@ export default {
       &nbsp;
       <button
         v-if="confirmCloseWork"
+        :disabled="cleaningWork"
         @click="confirmCloseWork=false"
         class="btn btn-sm btn-primary"
       >
